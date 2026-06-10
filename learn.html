@@ -7,7 +7,7 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Montserrat:wght@600;700;800&display=swap');
   *{margin:0;padding:0;box-sizing:border-box;}
-  body{font-family:'Noto Sans KR',sans-serif;background:#f5f5f0;min-height:100vh;padding-bottom:60px;}
+  body{font-family:'Noto Sans KR',sans-serif;background:#f5f5f0;min-height:100vh;padding-bottom:28px;}
   #loading{display:flex;align-items:center;justify-content:center;height:100vh;font-size:15px;color:#94a3b8;font-weight:600;}
   #app{display:none;}
   .header{padding:20px 20px 18px;}
@@ -26,6 +26,7 @@
   .content{padding:12px 20px 0;}
   .section-title-row{display:flex;align-items:center;justify-content:space-between;margin:4px 0 10px;}
   .section-title{font-size:11px;font-weight:700;color:#64748b;letter-spacing:0.08em;text-transform:uppercase;}
+  .speak-guide{display:inline-block;font-size:12px;color:#d97706;background:#fff7e0;border-radius:999px;padding:3px 9px;margin-left:auto;font-weight:700;line-height:1.4;white-space:nowrap;flex-shrink:0;}
   .listen-all-btn{background:#1e293b;color:#fcd64d;border:none;border-radius:24px;padding:7px 16px;font-family:'Noto Sans KR',sans-serif;font-size:12px;font-weight:700;cursor:pointer;}
   .listen-all-btn:active{opacity:0.8;}
   .expr-card{background:#fff;border-radius:12px;padding:14px 16px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,0.06);display:flex;align-items:flex-start;gap:10px;}
@@ -69,6 +70,8 @@
   .done-msg{text-align:center;margin-top:14px;font-size:14px;color:#64748b;line-height:1.7;display:none;}
   .done-msg.show{display:block;}
   .footer{text-align:center;margin-top:32px;font-size:11px;color:#94a3b8;padding:0 20px;line-height:1.8;}
+  .footer .copyright-note{display:block;margin-top:8px;color:#b8b8b8;font-size:10px;line-height:1.6;}
+  .footer .copyright-note strong{color:#E78EA0;font-weight:800;}
 </style>
 </head>
 <body>
@@ -99,18 +102,24 @@ function markDone(){var key='mt_s'+stageNum+'_completed';var completed=JSON.pars
 function updateProgress(){var key='mt_s'+stageNum+'_completed';var completed=JSON.parse(localStorage.getItem(key)||'[]');var streak=parseInt(localStorage.getItem('mt_s'+stageNum+'_streak')||'1');var count=Math.max(completed.length,1);var b=document.getElementById('barFill');if(b)b.style.width=Math.min(count/100*100,100)+'%';var l=document.getElementById('barLabel');if(l)l.textContent=count+' / 100 완료';var s=document.getElementById('streakTxt');if(s)s.textContent='🔥 '+streak+'일 연속';if(completed.indexOf(dayNum)!==-1){var btn=document.getElementById('doneBtn');if(btn){btn.textContent='오늘 완료됐어요! ✓';btn.classList.add('completed');}var msg=document.getElementById('doneMsg');if(msg)msg.classList.add('show');}}
 function shuffle(a){var r=a.slice();for(var i=r.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=r[i];r[i]=r[j];r[j]=t;}return r;}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function cleanWord(w){return String(w).replace(/^[\"'“”‘’(]+|[\"'“”‘’),.!?;:]+$/g,'').toLowerCase();}
+function splitSentences(text){var m=String(text).match(/[^.!?]+[.!?]+|[^.!?]+$/g);return m?m.map(function(s){return s.trim();}).filter(Boolean):[String(text)];}
+function chunkSentence(sentence){var words=String(sentence).trim().split(/\s+/).filter(Boolean);if(words.length<=4)return sentence.trim();var cuts=[];var leading={'Well,':1,'Actually,':1,'Honestly,':1,'Basically,':1,'Luckily,':1,'Unfortunately,':1,'Also,':1,'First,':1,'Next,':1,'Finally,':1,'Oh,':1,'Yes,':1,'No,':1,'Yeah,':1,'Sure,':1,'Okay,':1,'Thanks,':1,'Sorry,':1,'Hi,':1,'Hello,':1,'Hey,':1};var conj={because:1,when:1,if:1,but:1,so:1,and:1,or:1,while:1,before:1,after:1};var prep={with:1,from:1,about:1,for:1,in:1,on:1,at:1,near:1,around:1,before:1,after:1,during:1,without:1,inside:1,outside:1,by:1};var time={this:1,next:1,last:1,today:1,tomorrow:1,tonight:1,yesterday:1};function addCut(i){if(i>0&&i<words.length&&cuts.indexOf(i)===-1)cuts.push(i);}if(leading[words[0]]&&words.length>=4)addCut(1);for(var i=1;i<words.length-1;i++){var w=cleanWord(words[i]);if(conj[w]&&i>=3&&words.length-i>=2)addCut(i);}for(var j=2;j<words.length-1;j++){if(cleanWord(words[j])==='to'&&j>=3&&words.length-j>=2)addCut(j);}for(var k=2;k<words.length-1;k++){var wk=cleanWord(words[k]);if((prep[wk]||(time[wk]&&k>=3))&&k>=2&&words.length-k>=2){var front=words.slice(0,k).join(' ');if(k>=3||/^(I'm|I am|It's|It is|Are you|Do you|Can you|She is|He is|They are|We're|We are)\b/.test(front))addCut(k);}}if(!cuts.length&&words.length>=7){var mid=Math.round(words.length/2),best=-1;for(var n=mid;n<words.length-1;n++){var wn=cleanWord(words[n]);if(prep[wn]||conj[wn]||wn==='to'){best=n;break;}}if(best===-1)best=mid;if(best>=3&&words.length-best>=3)addCut(best);}cuts.sort(function(a,b){return a-b;});var maxCuts=words.length>=14?3:(words.length>=9?2:1);var filtered=[];for(var c=0;c<cuts.length&&filtered.length<maxCuts;c++){if(!filtered.length||cuts[c]-filtered[filtered.length-1]>=2)filtered.push(cuts[c]);}var chunks=[],start=0;filtered.forEach(function(cut){chunks.push(words.slice(start,cut).join(' '));start=cut;});chunks.push(words.slice(start).join(' '));return chunks.join(' / ');}
+function chunkEnglish(text){return String(text).split(/\s*\/\s*/).map(function(part){return splitSentences(part).map(chunkSentence).join(' / ');}).join(' / ');}
+function wordCount(s){var m=String(s).match(/[A-Za-z0-9]+(?:'[A-Za-z]+)?|[A-Z]{2,}/g);return m?m.length:1;}
+function chunkPronunciation(pron,chunkedEn){var pieces=String(chunkedEn).split(' / ');if(pieces.length<=1)return pron;var toks=String(pron).replace(/\s*\/\s*/g,' ').trim().split(/\s+/).filter(Boolean);if(toks.length<=pieces.length)return pron;var counts=pieces.map(wordCount),total=counts.reduce(function(a,b){return a+b;},0),chunks=[],idx=0,remaining=toks.length;for(var i=0;i<counts.length;i++){var left=counts.length-i,take;if(i===counts.length-1){take=remaining;}else{take=Math.round(toks.length*counts[i]/total);take=Math.max(1,Math.min(take,remaining-(left-1)));}chunks.push(toks.slice(idx,idx+take).join(' '));idx+=take;remaining-=take;}return chunks.join(' / ');}
 
 function render(d){
   var isVocab=(stageNum===4);
   var hasPattern=d.pattern&&d.pattern.trim()!=='';
-  var titleText=hasPattern?d.pattern:d.situation;
+  var titleText=hasPattern?d.pattern:(d.situation||d.title||d.part||cfg.name);
   sentences=[];
   var cardsHtml='',quizHtml='';
   if(isVocab&&d.words){
     d.words.forEach(function(w,i){sentences.push(w.word);cardsHtml+='<div class="word-card"><div class="word-header"><div class="word-main"><span class="word-en">'+esc(w.word)+'</span><span class="word-pron">'+esc(w.pronunciation)+'</span><span class="word-meaning">'+esc(w.meaning)+'</span></div><button class="speak-btn" style="border-color:'+cfg.color+'" onclick="speakOne('+i+',this)">▶</button></div><div class="word-example"><span class="en">'+esc(w.example.en)+'</span><span class="ko">'+esc(w.example.ko)+'</span></div></div>';});
     if(d.words.length>=4){var ci=Math.floor(Math.random()*d.words.length);var cw=d.words[ci];var opts=shuffle([{t:cw.meaning,ok:true}].concat(d.words.filter(function(_,i){return i!==ci;}).slice(0,3).map(function(w){return{t:w.meaning,ok:false};})));quizAnswerIdx=opts.findIndex(function(o){return o.ok;});quizHtml='<div class="quiz-title">오늘의 퀴즈</div><div class="quiz-box"><div class="quiz-q">"<strong>'+esc(cw.word)+'</strong>"의 뜻은?</div><div class="quiz-options" id="quizOpts">'+opts.map(function(o){return'<button class="quiz-opt" onclick="checkAnswer(this,'+o.ok+')">'+esc(o.t)+'</button>';}).join('')+'</div><div class="quiz-feedback" id="quizFeedback"></div></div>';}
   } else if(d.examples){
-    d.examples.forEach(function(ex,i){sentences.push(ex.en);cardsHtml+='<div class="expr-card"><span class="expr-num" style="color:'+cfg.accentNum+'">'+(i+1)+'</span><div class="expr-body"><span class="expr-en">'+esc(ex.en)+'</span><span class="expr-ko">'+esc(ex.ko)+'</span><span class="expr-pron">'+esc(ex.pronunciation)+'</span>'+(ex.context?'<span class="expr-ctx" style="border-color:'+cfg.color+'">'+esc(ex.context)+'</span>':'')+'</div><button class="speak-btn" style="border-color:'+cfg.color+'" onclick="speakOne('+i+',this)">▶</button></div>';});
+    d.examples.forEach(function(ex,i){var chunkedEn=chunkEnglish(ex.en);var chunkedPron=chunkPronunciation(ex.pronunciation,chunkedEn);sentences.push(ex.en);cardsHtml+='<div class="expr-card"><span class="expr-num" style="color:'+cfg.accentNum+'">'+(i+1)+'</span><div class="expr-body"><span class="expr-en">'+esc(chunkedEn)+'</span><span class="expr-ko">'+esc(ex.ko)+'</span><span class="expr-pron">'+esc(chunkedPron)+'</span>'+(ex.context?'<span class="expr-ctx" style="border-color:'+cfg.color+'">'+esc(ex.context)+'</span>':'')+'</div><button class="speak-btn" style="border-color:'+cfg.color+'" onclick="speakOne('+i+',this)">▶</button></div>';});
     if(d.examples.length>=4){var ei=Math.floor(Math.random()*d.examples.length);var ce=d.examples[ei];var eopts=shuffle([{ko:ce.ko,en:ce.en,ok:true}].concat(d.examples.filter(function(_,i){return i!==ei;}).slice(0,3).map(function(e){return{ko:e.ko,en:e.en,ok:false};})));quizAnswerIdx=eopts.findIndex(function(o){return o.ok;});quizHtml='<div class="quiz-title">오늘의 퀴즈</div><div class="quiz-box"><div class="quiz-q">"'+esc(ce.ko)+'"를 영어로 하면?</div><div class="quiz-options" id="quizOpts">'+eopts.map(function(o){return'<button class="quiz-opt" onclick="checkAnswer(this,'+o.ok+')">'+esc(o.en)+'</button>';}).join('')+'</div><div class="quiz-feedback" id="quizFeedback"></div></div>';}
   }
   var tipHtml='';
@@ -126,13 +135,14 @@ function render(d){
     +patMeanHtml+sitHtml+'</div>'
     +'<div class="progress-bar"><div class="streak" id="streakTxt">🔥 1일 연속</div>'
     +'<div class="bar-wrap"><div class="bar-track"><div class="bar-fill" id="barFill" style="width:1%;background:'+cfg.barColor+'"></div></div>'
-    +'<div class="bar-label" id="barLabel">1 / 100 완료</div></div></div>'
+    +'<div class="bar-label" id="barLabel">1 / 100 완료</div></div>'
+    +(isVocab?'':'<div class="speak-guide">듣고 따라하세요!</div>')+'</div>'
     +'<div class="content"><div class="section-title-row"><span class="section-title">'+sectionLabel+'</span>'
     +'<button class="listen-all-btn" onclick="speakAll()">▶ 전체 듣기</button></div>'
     +cardsHtml+tipHtml+quizHtml+'</div>'
     +'<div class="done-section"><button class="done-btn" id="doneBtn" style="background:'+cfg.badgeBg+';color:'+cfg.badgeText+'" onclick="markDone()">오늘 학습 완료! ✓</button>'
     +'<div class="done-msg" id="doneMsg">🎉 완료됐어요! 내일도 카톡으로 도착해요.<br><span style="font-size:12px;">오늘도 수고하셨어요 💪</span></div></div>'
-    +'<div class="footer">매일톡 · 내 삶을 바꾸는 톡<br>@maeiltalk_official</div>';
+    +'<div class="footer">매일톡 · 내 삶을 바꾸는 톡<br>@maeiltalk_official<span class="copyright-note">본 콘텐츠의 무단 복제 및 재배포를 금합니다 ©'+new Date().getFullYear()+'</span></div>';
   document.getElementById('app').innerHTML=html;
   document.getElementById('app').style.display='block';
   document.getElementById('loading').style.display='none';
@@ -145,5 +155,6 @@ for(var i=0;i<stageData.length;i++){if(stageData[i].day===dayNum){dayData=stageD
 if(!dayData)dayData=stageData[0];
 render(dayData);
 </script>
+
 </body>
 </html>
