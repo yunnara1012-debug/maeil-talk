@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>매일톡 - 내 삶을 바꾸는 톡</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+    background: #faf9f5;
+    color: #222;
+    min-height: 100vh;
+  }
+
+  /* ── 상단 헤더 ── */
+  .header {
+    background: #fff;
+    border-bottom: 1px solid #f0ede5;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .header-top {
+    width: 100%;
+    max-width: 480px;
+    padding: 14px 20px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .logo {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+  .logo span { color: #fcd64d; }
+  .logo-sub { font-size: 11px; color: #999; margin-top: 1px; }
+
+  /* ── 탭 ── */
+  .tabs {
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    border-bottom: 2px solid #f0ede5;
+    margin-top: 10px;
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 10px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #aaa;
+    background: none;
+    border: none;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s;
+  }
+  .tab-btn.active {
+    color: #222;
+    border-bottom-color: #fcd64d;
+  }
+
+  /* ── 탭 콘텐츠 ── */
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .page {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 0 0 60px;
+  }
+
+  /* ── 섹션 공통 ── */
+  .section {
+    padding: 28px 20px;
+    border-bottom: 8px solid #f5f3ee;
+  }
+  .section:last-child { border-bottom: none; }
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #fcd64d;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .section-title {
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 1.4;
+    margin-bottom: 8px;
+  }
+  .section-desc {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.7;
+  }
+
+  /* ── 히어로 ── */
+  .hero {
+    background: linear-gradient(160deg, #fffbe8 0%, #fff9d6 100%);
+    padding: 36px 20px 32px;
+    text-align: center;
+    border-bottom: 8px solid #f5f3ee;
+  }
+  .hero-badge {
+    display: inline-block;
+    background: #fcd64d;
+    color: #5a4200;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 14px;
+  }
+  .hero-title {
+    font-size: 26px;
+    font-weight: 900;
+    line-height: 1.35;
+    margin-bottom: 12px;
+    letter-spacing: -0.5px;
+  }
+  .hero-title em { color: #e8a000; font-style: normal; }
+  .hero-desc {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.7;
+    margin-bottom: 24px;
+  }
+  .btn-main {
+    display: block;
+    width: 100%;
+    background: #fcd64d;
+    color: #3a2800;
+    font-size: 16px;
+    font-weight: 800;
+    padding: 16px;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 16px rgba(252,214,77,0.4);
+    transition: transform 0.1s;
+  }
+  .btn-main:active { transform: scale(0.98); }
+  .btn-sub {
+    display: block;
+    width: 100%;
+    background: #fff;
+    color: #888;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 14px;
+    border: 1.5px solid #e8e4d9;
+    border-radius: 14px;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    transition: transform 0.1s;
+  }
+  .btn-sub:active { transform: scale(0.98); }
+  .price-note {
+    font-size: 12px;
+    color: #aaa;
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  /* ── 폰 목업 ── */
+  .phone-mockup {
+    width: 195px;
+    margin: 0 auto 24px;
+    position: relative;
+  }
+  .phone-frame {
+    background: #1a1a1a;
+    border-radius: 30px;
+    padding: 10px 7px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+  }
+  .phone-screen {
+    background: #f5f3ee;
+    border-radius: 22px;
+    overflow: hidden;
+  }
+  /* 상단 노란 헤더 */
+  .ps-top {
+    background: #fcd64d;
+    padding: 10px 10px 8px;
+  }
+  .ps-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+  }
+  .ps-brand { font-size: 7px; font-weight: 700; color: #5a4200; }
+  .ps-day {
+    background: #222;
+    color: #fff;
+    font-size: 6.5px;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 8px;
+  }
+  .ps-pattern { font-size: 14px; font-weight: 900; color: #222; line-height: 1.1; margin-bottom: 2px; }
+  .ps-meaning { font-size: 8px; font-weight: 700; color: #333; margin-bottom: 5px; }
+  .ps-situation {
+    display: inline-block;
+    background: rgba(255,255,255,0.6);
+    color: #5a4200;
+    font-size: 6.5px;
+    padding: 2px 7px;
+    border-radius: 10px;
+  }
+  /* 진행률 */
+  .ps-progress {
+    background: #fff;
+    padding: 6px 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border-bottom: 1px solid #f0ede5;
+  }
+  .ps-streak { font-size: 7px; font-weight: 700; color: #e8a000; white-space: nowrap; }
+  .ps-bar-wrap { flex: 1; background: #eee; border-radius: 3px; height: 4px; }
+  .ps-bar-fill { background: #fcd64d; height: 4px; border-radius: 3px; width: 3%; }
+  .ps-count { font-size: 6px; color: #aaa; white-space: nowrap; }
+  /* 표현 카드 */
+  .ps-cards { padding: 7px 8px; background: #f5f3ee; }
+  .ps-section-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 5px;
+  }
+  .ps-section-label { font-size: 7px; font-weight: 700; color: #555; }
+  .ps-listen-btn {
+    background: #222; color: #fff; font-size: 5.5px; font-weight: 700;
+    padding: 2px 6px; border-radius: 6px;
+  }
+  .ps-card {
+    background: #fff;
+    border-radius: 7px;
+    padding: 6px 8px;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: flex-start;
+    gap: 5px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .ps-num { font-size: 8px; font-weight: 800; color: #fcd64d; flex-shrink: 0; margin-top: 1px; }
+  .ps-card-body { flex: 1; }
+  .ps-en { font-size: 8px; font-weight: 800; color: #222; }
+  .ps-ko { font-size: 6.5px; font-weight: 700; color: #333; }
+  .ps-pron { font-size: 6px; color: #aaa; }
+  .ps-context { font-size: 6px; color: #888; border-left: 2px solid #fcd64d; padding-left: 4px; margin-top: 2px; }
+  .ps-play {
+    width: 16px; height: 16px; border-radius: 50%;
+    border: 1.5px solid #fcd64d;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 5px; color: #fcd64d; flex-shrink: 0; margin-top: 1px;
+  }
+
+  /* ── 결과 카드 ── */
+  .result-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .result-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 16px 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .result-icon { font-size: 24px; margin-bottom: 8px; }
+  .result-title { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+  .result-desc { font-size: 12px; color: #888; line-height: 1.5; }
+
+  /* ── 대상 ── */
+  .target-list { margin-top: 14px; }
+  .target-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0ede5;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .target-item:last-child { border-bottom: none; }
+  .target-check { color: #fcd64d; font-size: 18px; flex-shrink: 0; }
+
+  /* ── 커리큘럼 카드 ── */
+  .curriculum-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 18px 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .curriculum-badge {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1.2;
+    text-align: center;
+  }
+  .curriculum-body { flex: 1; }
+  .curriculum-title { font-size: 15px; font-weight: 800; margin-bottom: 4px; }
+  .curriculum-sub { font-size: 12px; color: #888; margin-bottom: 8px; }
+  .curriculum-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+  .ctag {
+    background: #f5f3ee;
+    color: #666;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 20px;
+  }
+  .curriculum-count {
+    font-size: 11px;
+    color: #bbb;
+    margin-top: 6px;
+  }
+
+  /* ── FAQ ── */
+  .faq-item {
+    background: #fff;
+    border-radius: 14px;
+    margin-bottom: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .faq-q {
+    padding: 16px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+  }
+  .faq-q::after {
+    content: '▾';
+    color: #fcd64d;
+    font-size: 16px;
+    flex-shrink: 0;
+    transition: transform 0.2s;
+  }
+  .faq-item.open .faq-q::after { transform: rotate(180deg); }
+  .faq-a {
+    display: none;
+    padding: 0 16px 16px;
+    font-size: 13px;
+    color: #666;
+    line-height: 1.7;
+    border-top: 1px solid #f5f3ee;
+    padding-top: 12px;
+  }
+  .faq-item.open .faq-a { display: block; }
+
+  /* ── 환불규정 ── */
+  .refund-box {
+    background: #fff;
+    border-radius: 16px;
+    padding: 18px;
+    margin-top: 16px;
+    font-size: 13px;
+    color: #555;
+    line-height: 1.8;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .refund-box .refund-title {
+    font-size: 14px;
+    font-weight: 800;
+    color: #333;
+    margin-bottom: 10px;
+  }
+  .refund-row {
+    display: flex;
+    gap: 10px;
+    padding: 6px 0;
+    border-bottom: 1px solid #f5f3ee;
+    align-items: baseline;
+  }
+  .refund-row:last-child { border-bottom: none; }
+  .refund-day { font-weight: 700; color: #333; min-width: 80px; font-size: 12px; }
+  .refund-rate { font-size: 13px; color: #555; }
+  .refund-note {
+    margin-top: 10px;
+    font-size: 11px;
+    color: #aaa;
+    line-height: 1.6;
+  }
+
+  /* ── CTA 하단 ── */
+  .cta-bottom {
+    padding: 24px 20px;
+    text-align: center;
+    background: #fff8e0;
+  }
+  .cta-bottom .section-title { margin-bottom: 6px; font-size: 18px; }
+  .cta-bottom .section-desc { margin-bottom: 20px; font-size: 13px; }
+</style>
+</head>
+<body>
+
+<!-- ── 헤더 + 탭 ── -->
+<div class="header">
+  <div class="header-top">
+    <div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="36" height="36"><g fill="none" stroke="#E78EA0" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"><path d="M60 18 C81 18 98 34 98 54 C98 74 81 90 60 90 C54 90 48 89 43 86 C40 92 34 97 26 99 C30 92 31 86 30 81 C22 74 22 64 22 54 C22 34 39 18 60 18 Z"></path><path d="M60 74 C60 74 38 61 38 47 C38 40 43 36 49 36 C54 36 58 39 60 43 C62 39 66 36 71 36 C77 36 82 40 82 47 C82 61 60 74 60 74 Z"></path><path d="M60 66 C60 66 46 57.5 46 48.5 C46 44.5 49 42.5 52 42.5 C55.5 42.5 58.5 45 60 47.5 C61.5 45 64.5 42.5 68 42.5 C71 42.5 74 44.5 74 48.5 C74 57.5 60 66 60 66 Z"></path></g><circle cx="36.5" cy="60" r="4.2" fill="#E78EA0"></circle></svg>
+        <div>
+          <div class="logo" style="color:#E78EA0;font-size:20px;">매일톡</div>
+          <div class="logo-sub">내 삶을 바꾸는 톡</div>
+        </div>
+      </div>
+    </div>
+    <a href="http://pf.kakao.com/_xorBnX" target="_blank" style="display:flex;align-items:center;gap:5px;background:#FEE500;color:#3a2800;font-size:12px;font-weight:700;padding:7px 12px;border-radius:20px;text-decoration:none;flex-shrink:0;">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="#3a2800"><path d="M12 3C6.477 3 2 6.477 2 11c0 2.89 1.582 5.447 4 7l-.5 3.5 3.5-1.5c.94.31 1.94.5 3 .5 5.523 0 10-3.477 10-8S17.523 3 12 3z"/></svg>
+      친구 추가
+    </a>
+  </div>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('home', this)">🏠 홈</button>
+    <button class="tab-btn" onclick="switchTab('curriculum', this)">📚 커리큘럼</button>
+    <button class="tab-btn" onclick="switchTab('faq', this)">💬 FAQ</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════ -->
+<!--  홈 탭                          -->
+<!-- ════════════════════════════════ -->
+<div id="tab-home" class="tab-content active">
+<div class="page">
+
+  <!-- 히어로 -->
+  <div class="hero">
+    <div class="hero-badge">✨ 지금 신청하면 7일 무료체험</div>
+    <div class="hero-title">
+      매일 카카오톡으로<br>
+      <em>영어 한 패턴씩</em> 보내드려요
+    </div>
+    <div class="hero-desc">
+      앱 설치 NO · 교재 구입 NO<br>
+      카톡 확인하는 것만으로 영어가 늘어요
+    </div>
+
+    <!-- 폰 목업 -->
+    <div class="phone-mockup">
+      <div class="phone-frame">
+        <div class="phone-screen">
+          <!-- 노란 헤더 -->
+          <div class="ps-top">
+            <div class="ps-top-row">
+              <span class="ps-brand">매일톡 영어회화</span>
+              <span class="ps-day">DAY 01</span>
+            </div>
+            <div class="ps-pattern">I'm ~</div>
+            <div class="ps-meaning">~이에요 / ~해요</div>
+            <span class="ps-situation">📍 카페에서 처음 만난 사람에게 자기소개</span>
+          </div>
+          <!-- 진행률 -->
+          <div class="ps-progress">
+            <span class="ps-streak">🔥 1일 연속</span>
+            <div class="ps-bar-wrap"><div class="ps-bar-fill"></div></div>
+            <span class="ps-count">1/100 완료</span>
+          </div>
+          <!-- 표현 카드들 -->
+          <div class="ps-cards">
+            <div class="ps-section-row">
+              <span class="ps-section-label">오늘의 표현</span>
+              <span class="ps-listen-btn">▶ 전체 듣기</span>
+            </div>
+            <div class="ps-card">
+              <span class="ps-num">1</span>
+              <div class="ps-card-body">
+                <div class="ps-en">I'm James.</div>
+                <div class="ps-ko">저는 제임스예요.</div>
+                <div class="ps-pron">아임 제임스</div>
+                <div class="ps-context">이름을 말할 때 가장 기본!</div>
+              </div>
+              <div class="ps-play">▶</div>
+            </div>
+            <div class="ps-card">
+              <span class="ps-num">2</span>
+              <div class="ps-card-body">
+                <div class="ps-en">I'm from Korea.</div>
+                <div class="ps-ko">저는 한국에서 왔어요.</div>
+                <div class="ps-pron">아임 프럼 코리아</div>
+                <div class="ps-context">출신을 말할 때</div>
+              </div>
+              <div class="ps-play">▶</div>
+            </div>
+            <div class="ps-card">
+              <span class="ps-num">3</span>
+              <div class="ps-card-body">
+                <div class="ps-en">I'm a coffee lover.</div>
+                <div class="ps-ko">저는 커피를 정말 좋아해요.</div>
+                <div class="ps-pron">아임 어 커피 러버</div>
+                <div class="ps-context">취향·성격을 소개할 때</div>
+              </div>
+              <div class="ps-play">▶</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 포함 혜택 -->
+    <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:18px;">
+      <span style="background:#fff;border:1.5px solid #fcd64d;border-radius:20px;padding:5px 13px;font-size:12px;font-weight:700;color:#555;">📚 단계별 전자책 포함</span>
+      <span style="background:#fff;border:1.5px solid #fcd64d;border-radius:20px;padding:5px 13px;font-size:12px;font-weight:700;color:#555;">🎧 원어민 음성 포함</span>
+      <span style="background:#fff;border:1.5px solid #fcd64d;border-radius:20px;padding:5px 13px;font-size:12px;font-weight:700;color:#555;">✏️ 퀴즈 포함</span>
+    </div>
+    <a href="https://forms.gle/CexLrqdL3GxtGQhp9" class="btn-main" target="_blank">
+      📩 구독 신청하기 · 14,900원
+    </a>
+    <a href="https://forms.gle/CexLrqdL3GxtGQhp9" class="btn-sub" target="_blank">
+      7일 무료체험 신청하기
+    </a>
+    <div class="price-note">1단계 100일 기준 · 하루 149원 · 1회 결제</div>
+  </div>
+
+  <!-- 이런 분께 추천 -->
+  <div class="section">
+    <div class="section-label">FOR WHO</div>
+    <div class="section-title">이런 분께 딱 맞아요 ✅</div>
+    <div class="target-list">
+      <div class="target-item">
+        <span class="target-check">✔</span>
+        <span>영어 공부를 시작하고 싶은데 뭘 봐야 할지 모르겠어요</span>
+      </div>
+      <div class="target-item">
+        <span class="target-check">✔</span>
+        <span>앱 설치하고 매일 접속하는 게 귀찮고 번거로워요</span>
+      </div>
+      <div class="target-item">
+        <span class="target-check">✔</span>
+        <span>출퇴근길 카톡 확인할 때 짬짬이 공부하고 싶어요</span>
+      </div>
+      <div class="target-item">
+        <span class="target-check">✔</span>
+        <span>해외여행·직장·일상에서 쓸 수 있는 진짜 영어가 필요해요</span>
+      </div>
+      <div class="target-item">
+        <span class="target-check">✔</span>
+        <span>꾸준히 하고 싶지만 혼자 하면 항상 며칠 만에 포기해요</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 이걸 하면 달라지는 것 -->
+  <div class="section">
+    <div class="section-label">RESULTS</div>
+    <div class="section-title">100일 후 이렇게 달라져요 🚀</div>
+    <div class="result-cards">
+      <div class="result-card">
+        <div class="result-icon">💬</div>
+        <div class="result-title">일상 영어 400개</div>
+        <div class="result-desc">왕초보부터 중급까지 실생활 표현을 내 것으로</div>
+      </div>
+      <div class="result-card">
+        <div class="result-icon">🎧</div>
+        <div class="result-title">원어민 발음 학습</div>
+        <div class="result-desc">매일 원어민 음성으로 듣고 따라하는 습관</div>
+      </div>
+      <div class="result-card">
+        <div class="result-icon">🔥</div>
+        <div class="result-title">100일 학습 습관</div>
+        <div class="result-desc">카톡 확인만으로 영어 루틴이 생겨요</div>
+      </div>
+      <div class="result-card">
+        <div class="result-icon">📱</div>
+        <div class="result-title">카톡으로 끝</div>
+        <div class="result-desc">앱 설치 없이 퀴즈·음성·학습 전부 카톡에서</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 서비스 흐름 -->
+  <div class="section">
+    <div class="section-label">HOW IT WORKS</div>
+    <div class="section-title">이렇게 진행돼요 📋</div>
+    <div class="section-desc" style="margin-top:14px;">
+      <div style="display:flex;gap:12px;margin-bottom:14px;align-items:flex-start;">
+        <div style="background:#fcd64d;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0;">1</div>
+        <div><strong>신청서 작성</strong><br><span style="color:#888;font-size:13px;">이름, 카카오톡 ID 입력 · 30초면 완료!</span></div>
+      </div>
+      <div style="display:flex;gap:12px;margin-bottom:14px;align-items:flex-start;">
+        <div style="background:#fcd64d;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0;">2</div>
+        <div><strong>카카오톡 채널 추가</strong><br><span style="color:#888;font-size:13px;">신청 완료 페이지의 링크로 매일톡 채널 추가 → 준비 완료!</span></div>
+      </div>
+      <div style="display:flex;gap:12px;margin-bottom:14px;align-items:flex-start;">
+        <div style="background:#fcd64d;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0;">3</div>
+        <div><strong>매일 카톡 수신</strong><br><span style="color:#888;font-size:13px;">Day 1부터 차례로 발송 · 음성 듣기 + 퀴즈 포함</span></div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <div style="background:#fcd64d;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0;">4</div>
+        <div><strong>100일 완주 🎉</strong><br><span style="color:#888;font-size:13px;">완주 시 수료증 이미지 발송!</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 하단 CTA -->
+  <div class="cta-bottom">
+    <div class="section-title">지금 바로 시작해볼까요?</div>
+    <div class="section-desc">7일 무료체험으로 먼저 경험해보세요</div>
+    <a href="https://forms.gle/CexLrqdL3GxtGQhp9" class="btn-main" target="_blank">📩 구독 신청하기 · 14,900원</a>
+    <a href="https://forms.gle/CexLrqdL3GxtGQhp9" class="btn-sub" target="_blank">7일 무료체험 신청하기</a>
+  </div>
+
+</div>
+</div><!-- /tab-home -->
+
+
+<!-- ════════════════════════════════ -->
+<!--  커리큘럼 탭                    -->
+<!-- ════════════════════════════════ -->
+<div id="tab-curriculum" class="tab-content">
+<div class="page">
+
+  <div class="section" style="border-bottom:none;">
+    <div class="section-label">CURRICULUM</div>
+    <div class="section-title">총 4단계 커리큘럼</div>
+    <div class="section-desc" style="margin-top:6px;">단계별로 신청해서 내 수준에 맞게 시작하세요.<br>각 단계는 100일, 하루 5개 표현 또는 단어예요.</div>
+  </div>
+
+  <div style="padding:0 20px 40px;">
+
+    <!-- 1단계 -->
+    <div class="curriculum-card">
+      <div class="curriculum-badge" style="background:#fff3b0;color:#7a5800;">
+        1<br>단계
+      </div>
+      <div class="curriculum-body">
+        <div class="curriculum-title">왕초보 일상 패턴</div>
+        <div class="curriculum-sub">영어가 아예 처음이어도 OK!</div>
+        <div class="curriculum-tags">
+          <span class="ctag">기초 패턴</span>
+          <span class="ctag">일상 회화</span>
+          <span class="ctag">음성 제공</span>
+          <span class="ctag">퀴즈 포함</span>
+        </div>
+        <div class="curriculum-count">총 100일 · 500개 표현</div>
+        <div style="margin-top:10px;font-size:13px;color:#666;line-height:1.6;">
+          "I'm on my way." "Give me a sec." 처럼<br>
+          <strong style="color:#555;">일상에서 바로 꺼내 쓸 수 있는 짧고 강한 패턴</strong>을 익혀요.<br>
+          문법 몰라도 OK! 상황별 패턴을 반복하면서<br>
+          자연스럽게 영어 감각을 키워요.
+        </div>
+      </div>
+    </div>
+
+    <!-- 2단계 -->
+    <div class="curriculum-card">
+      <div class="curriculum-badge" style="background:#d4f5ef;color:#1a6b5e;">
+        2<br>단계
+      </div>
+      <div class="curriculum-body">
+        <div class="curriculum-title">원어민 기초 동사 표현</div>
+        <div class="curriculum-sub">진짜 영어를 배우고 싶은 분</div>
+        <div class="curriculum-tags">
+          <span class="ctag">기초 동사</span>
+          <span class="ctag">동사 활용</span>
+          <span class="ctag">음성 제공</span>
+          <span class="ctag">퀴즈 포함</span>
+        </div>
+        <div class="curriculum-count">총 100일 · 500개 표현</div>
+        <div style="margin-top:10px;font-size:13px;color:#666;line-height:1.6;">
+          원어민이 매일 쓰는 <strong style="color:#555;">기초 동사(get, take, make 등)</strong>의<br>
+          다양한 쓰임새를 익혀요.<br>
+          단어 하나로 수십 가지 상황을 말할 수 있어요!
+        </div>
+      </div>
+    </div>
+
+    <!-- 3단계 -->
+    <div class="curriculum-card">
+      <div class="curriculum-badge" style="background:#cce5f6;color:#1a4e70;">
+        3<br>단계
+      </div>
+      <div class="curriculum-body">
+        <div class="curriculum-title">중급 실전 상황별 영어</div>
+        <div class="curriculum-sub">원어민처럼 말하고 싶은 분</div>
+        <div class="curriculum-tags">
+          <span class="ctag">상황별 표현</span>
+          <span class="ctag">숙어·관용구</span>
+          <span class="ctag">음성 제공</span>
+          <span class="ctag">퀴즈 포함</span>
+        </div>
+        <div class="curriculum-count">총 100일 · 500개 표현</div>
+        <div style="margin-top:10px;font-size:13px;color:#666;line-height:1.6;">
+          직장, 여행, 연애, 일상 등 실제 상황에서<br>
+          <strong style="color:#555;">교과서에 없는 진짜 원어민 표현</strong>을 익혀요.<br>
+          슬랭, 관용구, 뉘앙스 차이까지<br>
+          이제 영어가 자연스럽게 나와요.
+        </div>
+      </div>
+    </div>
+
+    <!-- 단어확장 -->
+    <div class="curriculum-card">
+      <div class="curriculum-badge" style="background:#fff0b3;color:#7a5800;">
+        +<br>단어
+      </div>
+      <div class="curriculum-body">
+        <div class="curriculum-title">실생활 단어 확장</div>
+        <div class="curriculum-sub">어휘력을 높이고 싶은 분</div>
+        <div class="curriculum-tags">
+          <span class="ctag">실생활 단어</span>
+          <span class="ctag">품사별 분류</span>
+          <span class="ctag">음성 제공</span>
+          <span class="ctag">퀴즈 포함</span>
+        </div>
+        <div class="curriculum-count">총 100일 · 500개 단어</div>
+        <div style="margin-top:10px;font-size:13px;color:#666;line-height:1.6;">
+          원어민이 실생활에서 <strong style="color:#555;">정말 자주 쓰는 단어</strong>만<br>
+          엄선했어요. 단어·발음·뜻·예문까지 한 번에!<br>
+          1~3단계와 병행하거나 단독으로 수강 가능해요!
+        </div>
+      </div>
+    </div>
+
+    <!-- 가격 안내 -->
+    <div style="background:#fff8e0;border-radius:16px;padding:18px;margin-top:4px;">
+      <div style="font-size:14px;font-weight:800;margin-bottom:12px;">💰 가격 안내</div>
+      <div style="font-size:13px;color:#555;line-height:1.8;">
+        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #ffe082;">
+          <span>각 단계 (100일)</span><span style="font-weight:700;">14,900원</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #ffe082;">
+          <span>하루 단가</span><span style="font-weight:700;color:#e8a000;">149원/일</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0;">
+          <span>결제 방식</span><span style="font-weight:700;">1회 결제 (자동결제 없음)</span>
+        </div>
+      </div>
+      <a href="https://forms.gle/CexLrqdL3GxtGQhp9" class="btn-main" style="margin-top:14px;" target="_blank">지금 신청하기</a>
+    </div>
+
+  </div>
+</div>
+</div><!-- /tab-curriculum -->
+
+
+<!-- ════════════════════════════════ -->
+<!--  FAQ 탭                         -->
+<!-- ════════════════════════════════ -->
+<div id="tab-faq" class="tab-content">
+<div class="page">
+
+  <div class="section" style="border-bottom:none;">
+    <div class="section-label">FAQ</div>
+    <div class="section-title">자주 묻는 질문 💬</div>
+  </div>
+
+  <div style="padding:0 20px 32px;">
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">신청하면 어떻게 시작하나요?</div>
+      <div class="faq-a">신청서 작성 완료 후 안내 페이지에 있는 링크로 매일톡 카카오톡 채널을 추가해주세요. 채널 추가 후 다음 날 아침부터 Day 1 메시지가 발송돼요!</div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">무료체험은 어떻게 진행되나요?</div>
+      <div class="faq-a">무료체험은 <strong>1단계 Day 1~7 콘텐츠</strong>가 7일간 무료로 발송돼요. 체험 후 만족하시면 1단계를 정식 신청하시면 Day 8부터 이어서 받아볼 수 있어요! 별도 결제 없이 체험이 종료되면 자동으로 중단돼요.</div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">선물하기 가능한가요?</div>
+      <div class="faq-a">가능해요! 구독 신청 시 '선물하기' 항목에서 받으실 분의 이름과 카카오톡 ID를 입력해주시면 돼요. 결제는 신청자가, 메시지는 받으시는 분에게 발송돼요.</div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">결제는 어떻게 하나요? 자동결제인가요?</div>
+      <div class="faq-a">1단계 100일 기준 14,900원 1회 결제예요. 자동결제나 정기결제가 아니라 한 번 결제하면 끝이에요. 다음 단계를 원하시면 별도로 신청하시면 돼요.</div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">발송 시간을 바꿀 수 있나요?</div>
+      <div class="faq-a">현재 발송 시간 변경은 지원하지 않아요. 모든 구독자에게 동일한 시간에 발송돼요.</div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">앱 설치가 필요한가요?</div>
+      <div class="faq-a">카카오톡만 있으면 돼요! 별도 앱 설치 없이 카카오톡 채널 메시지로 모든 학습이 이루어져요. 음성 듣기, 퀴즈도 카톡 링크로 바로 열려요.</div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">중간에 빠진 날은 어떻게 되나요?</div>
+      <div class="faq-a">발송된 링크는 기간 내에 언제든지 다시 열어볼 수 있어요. 바쁜 날 못 봤다면 나중에 해당 날의 링크를 찾아서 학습하시면 돼요.</div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">단계 순서대로 수강해야 하나요?</div>
+      <div class="faq-a">권장은 1단계부터 순서대로지만, 이미 기초가 있으신 분은 2단계나 단어확장부터 시작하셔도 괜찮아요. 각 단계는 독립적으로 구성돼 있어요.</div>
+    </div>
+
+    <!-- 환불규정 -->
+    <div style="margin-top:24px;">
+      <div style="font-size:15px;font-weight:800;margin-bottom:12px;">📋 환불규정</div>
+      <div class="refund-box">
+        <div class="refund-title">구독 취소 및 환불 안내</div>
+        <div class="refund-row">
+          <div class="refund-day">7일 이내</div>
+          <div class="refund-rate">결제금액 − 이용대금 환불</div>
+        </div>
+        <div class="refund-row">
+          <div class="refund-day">7일 초과</div>
+          <div class="refund-rate">결제금액 − 이용대금 − 위약금 환불</div>
+        </div>
+        <div style="margin-top:12px;padding:10px 12px;background:#fff9e6;border-radius:10px;font-size:12px;color:#666;line-height:1.9;">
+          <div style="font-weight:700;color:#e8a000;margin-bottom:4px;">💡 계산 방법</div>
+          <div>· 이용대금 = 14,900원 × (이용일수 ÷ 100일)</div>
+          <div>· 위약금 = 14,900원 × 10% = 1,490원 (7일 초과 시)</div>
+          <div style="margin-top:6px;padding-top:6px;border-top:1px solid #ffe082;color:#aaa;font-size:11px;line-height:1.7;">
+            예) Day 10에 환불 요청 시<br>
+            이용대금 1,490원 + 위약금 1,490원 차감<br>
+            → <strong style="color:#555;">환불금액 11,920원</strong>
+          </div>
+        </div>
+        <div class="refund-note" style="margin-top:10px;">
+          · 환불 요청은 카카오톡 채널로 문의해주세요.<br>
+          · 무료체험 기간 중에는 별도 결제가 발생하지 않아요.
+        </div>
+      </div>
+    </div>
+
+    <!-- 문의 -->
+    <div style="background:#fff;border-radius:16px;padding:18px;margin-top:16px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+      <div style="font-size:14px;font-weight:700;margin-bottom:6px;">더 궁금한 점이 있으신가요?</div>
+      <div style="font-size:13px;color:#888;margin-bottom:14px;">카카오톡 채널로 편하게 문의해주세요!</div>
+      <a href="http://pf.kakao.com/_xorBnX/chat" class="btn-main" target="_blank" style="font-size:14px;padding:14px;">💬 카카오톡 채널로 문의하기</a>
+    </div>
+
+  </div>
+</div>
+</div><!-- /tab-faq -->
+
+
+<script>
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function toggleFaq(item) {
+  item.classList.toggle('open');
+}
+</script>
+</body>
+</html>
